@@ -8,6 +8,8 @@ trait HasSIUnits
 {
     /**
      * Map of metric prefixes to their powers of 10.
+     *
+     * @var array<string, int>
      */
     private array $metricPrefixes = [
         '' => 0,       // base unit (meter)
