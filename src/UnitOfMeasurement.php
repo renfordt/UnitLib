@@ -9,20 +9,44 @@ class UnitOfMeasurement
     /**
      * @var array<string>
      */
-    protected array $aliases = [];
+    private array $_aliases = [];
 
-    public function __construct(public string $name, protected float $conversionFactor)
-    {
-        $this->aliases[] = $this->name;
+    /**
+     * Get all aliases for this unit (including the primary name).
+     *
+     * @var array<string>
+     */
+    public array $aliases {
+        get => $this->_aliases;
     }
 
+    /**
+     * Get the conversion factor relative to the native unit.
+     */
+    public float $conversionFactor {
+        get => $this->_conversionFactor;
+    }
+
+    public function __construct(
+        public readonly string $name,
+        private readonly float $_conversionFactor
+    ) {
+        $this->_aliases[] = $name;
+    }
+
+    /**
+     * Add an alias for this unit.
+     */
     public function addAlias(string $alias): void
     {
-        $this->aliases[] = $alias;
+        $this->_aliases[] = $alias;
     }
 
+    /**
+     * Check if the given string is an alias for this unit.
+     */
     public function isAlias(string $alias): bool
     {
-        return in_array($alias, $this->aliases);
+        return in_array($alias, $this->aliases, true);
     }
 }
