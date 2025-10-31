@@ -164,6 +164,10 @@ abstract class PhysicalQuantity implements \Stringable
             $this instanceof Mass && $quantity instanceof Acceleration => new Force($result / 1000, 'N'),
             // Force × Length = Energy
             $this instanceof Force && $quantity instanceof Length => new Energy($result, 'J'),
+            // Current × Resistance = Voltage (Ohm's law: V = I × R)
+            $this instanceof Current && $quantity instanceof Resistance => new Voltage($result, 'V'),
+            // Resistance × Current = Voltage (commutative)
+            $this instanceof Resistance && $quantity instanceof Current => new Voltage($result, 'V'),
             default => throw new \InvalidArgumentException("Cannot multiply {$this->nativeUnit->name} by {$quantity->nativeUnit->name}: resulting unit '{$derivedUnitName}' is not supported"),
         };
     }
@@ -199,6 +203,10 @@ abstract class PhysicalQuantity implements \Stringable
             $this instanceof Volume && $quantity instanceof Length => new Area($result, 'm²'),
             // Volume / Area = Length
             $this instanceof Volume && $quantity instanceof Area => new Length($result, 'm'),
+            // Voltage / Current = Resistance (Ohm's law: R = V / I)
+            $this instanceof Voltage && $quantity instanceof Current => new Resistance($result, 'Ω'),
+            // Voltage / Resistance = Current (Ohm's law: I = V / R)
+            $this instanceof Voltage && $quantity instanceof Resistance => new Current($result, 'A'),
             default => throw new \InvalidArgumentException("Cannot divide {$this->nativeUnit->name} by {$quantity->nativeUnit->name}: resulting unit '{$derivedUnitName}' is not supported"),
         };
     }

@@ -9,6 +9,11 @@ namespace Renfordt\UnitLib;
  *
  * Native unit: volt (V)
  * Supports: V, mV, μV, kV, MV, GV, etc.
+ *
+ * Ohm's law relationships:
+ * - Voltage = Current × Resistance (V = I × R)
+ * - Current = Voltage / Resistance (I = V / R)
+ * - Resistance = Voltage / Current (R = V / I)
  */
 class Voltage extends PhysicalQuantity
 {
@@ -25,5 +30,15 @@ class Voltage extends PhysicalQuantity
         $volt->addAlias('volt');
         $volt->addAlias('volts');
         $this->addUnit($volt);
+    }
+
+    /**
+     * Static factory method: Calculate voltage from current and resistance.
+     * Uses Ohm's law: V = I × R
+     */
+    public static function fromCurrentAndResistance(Current $current, Resistance $resistance): self
+    {
+        /** @var self */
+        return $current->multiply($resistance);
     }
 }

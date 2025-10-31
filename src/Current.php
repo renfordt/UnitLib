@@ -9,6 +9,11 @@ namespace Renfordt\UnitLib;
  *
  * Native unit: ampere (A)
  * Supports: A, mA, μA, nA, kA, MA, etc.
+ *
+ * Ohm's law relationships:
+ * - Voltage = Current × Resistance (V = I × R)
+ * - Current = Voltage / Resistance (I = V / R)
+ * - Resistance = Voltage / Current (R = V / I)
  */
 class Current extends PhysicalQuantity
 {
@@ -27,5 +32,15 @@ class Current extends PhysicalQuantity
         $ampere->addAlias('amp');
         $ampere->addAlias('amps');
         $this->addUnit($ampere);
+    }
+
+    /**
+     * Static factory method: Calculate current from voltage and resistance.
+     * Uses Ohm's law: I = V / R
+     */
+    public static function fromVoltageAndResistance(Voltage $voltage, Resistance $resistance): self
+    {
+        /** @var self */
+        return $voltage->divide($resistance);
     }
 }
