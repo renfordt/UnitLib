@@ -1,5 +1,14 @@
 # UnitLib
 
+[![Badge](http://img.shields.io/badge/source-renfordt/UnitLib-blue.svg)](https://github.com/renfordt/UnitLib)
+[![Packagist Version](https://img.shields.io/packagist/v/renfordt/unit-lib)](https://packagist.org/packages/renfordt/unit-lib/)
+![Packagist PHP Version](https://img.shields.io/packagist/dependency-v/renfordt/unit-lib/php)
+![GitHub License](https://img.shields.io/github/license/renfordt/UnitLib)
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/renfordt/colors/tests.yml?logo=github)
+[![Code Coverage](https://qlty.sh/gh/renfordt/projects/UnitLib/coverage.svg)](https://qlty.sh/gh/renfordt/projects/UnitLib)
+[![Maintainability](https://qlty.sh/gh/renfordt/projects/UnitLib/maintainability.svg)](https://qlty.sh/gh/renfordt/projects/UnitLib)
+
+
 > A modern, type-safe PHP library for handling physical quantities and unit conversions
 
 [![PHP Version](https://img.shields.io/badge/PHP-8.4%2B-777BB4?style=flat-square&logo=php)](https://www.php.net/)
