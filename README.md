@@ -11,10 +11,6 @@
 
 > A modern, type-safe PHP library for handling physical quantities and unit conversions
 
-[![PHP Version](https://img.shields.io/badge/PHP-8.4%2B-777BB4?style=flat-square&logo=php)](https://www.php.net/)
-[![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE)
-[![Code Style](https://img.shields.io/badge/code%20style-PSR--12-green?style=flat-square)](https://www.php-fig.org/psr/psr-12/)
-
 ---
 
 ## Table of Contents
