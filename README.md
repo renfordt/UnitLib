@@ -727,14 +727,6 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 ---
 
-## Author
-
-**Jannik Renfordt**
-- Email: jannikrenfordt@gmx.de
-- GitHub: [@renfordt](https://github.com/renfordt)
-
----
-
 ## Acknowledgments
 
 - Built with modern PHP 8.4 features
