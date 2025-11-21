@@ -118,13 +118,13 @@ trait HasSIUnits
         $baseUnit = $this->getSIBaseUnit();
 
         // Check if unit ends with base unit (with or without power notation)
-        if (str_ends_with($unit, $baseUnit)) {
+        if (str_ends_with($unit, (string) $baseUnit)) {
             return true;
         }
 
         // For units with power, also check numeric notation (e.g., "m2" vs "m²")
         if ($power > 1) {
-            $baseWithoutPower = preg_replace('/[²³⁴⁵⁶⁷⁸⁹2-9]$/', '', $baseUnit);
+            $baseWithoutPower = preg_replace('/[²³⁴⁵⁶⁷⁸⁹2-9]$/', '', (string) $baseUnit);
             $numericPowerUnit = $baseWithoutPower . $power;
             if (str_ends_with($unit, $numericPowerUnit)) {
                 return true;
@@ -147,15 +147,15 @@ trait HasSIUnits
 
         // Detect power from the base unit itself
         $basePower = 1;
-        if (str_contains($baseUnit, '²') || str_ends_with($baseUnit, '2')) {
+        if (str_contains((string) $baseUnit, '²') || str_ends_with((string) $baseUnit, '2')) {
             $basePower = 2;
-        } elseif (str_contains($baseUnit, '³') || str_ends_with($baseUnit, '3')) {
+        } elseif (str_contains((string) $baseUnit, '³') || str_ends_with((string) $baseUnit, '3')) {
             $basePower = 3;
         }
 
         // Check if unit ends with base unit
-        if (str_ends_with($unit, $baseUnit)) {
-            $prefix = substr($unit, 0, -strlen($baseUnit));
+        if (str_ends_with($unit, (string) $baseUnit)) {
+            $prefix = substr($unit, 0, -strlen((string) $baseUnit));
             return [$prefix, $basePower];
         }
 
@@ -163,7 +163,7 @@ trait HasSIUnits
         // try matching with numeric notation (e.g., "m2" vs "m²")
         if ($basePower > 1) {
             // Extract base without power symbol
-            $baseWithoutPower = preg_replace('/[²³⁴⁵⁶⁷⁸⁹2-9]$/', '', $baseUnit);
+            $baseWithoutPower = preg_replace('/[²³⁴⁵⁶⁷⁸⁹2-9]$/', '', (string) $baseUnit);
             // Try matching with numeric notation
             $numericPowerUnit = $baseWithoutPower . $basePower;
             if (str_ends_with($unit, $numericPowerUnit)) {

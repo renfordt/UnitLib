@@ -398,7 +398,7 @@ class ImmutabilityTest extends TestCase
 
         foreach ($quantities as $quantity) {
             foreach ($properties as $property) {
-                $className = (new \ReflectionClass($quantity))->getShortName();
+                $className = new \ReflectionClass($quantity)->getShortName();
                 $data["{$className}::{$property}"] = [$quantity, $property];
             }
         }

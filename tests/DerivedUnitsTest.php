@@ -378,14 +378,14 @@ final class DerivedUnitsTest extends TestCase
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage("Unit 'ft/h' not found");
 
-        $velocity = (new Length(100, 'm'))->divide(new Time(10, 's'));
+        $velocity = new Length(100, 'm')->divide(new Time(10, 's'));
         $velocity->toUnit('ft/h');
     }
 
     public function test_derived_velocity_conversion_to_defined_compound_units_works(): void
     {
         // Test that conversions to DEFINED compound units work correctly
-        $velocity = (new Length(100, 'm'))->divide(new Time(10, 's'));
+        $velocity = new Length(100, 'm')->divide(new Time(10, 's'));
 
         // These should work since they're defined in Velocity class
         $this->assertEqualsWithDelta(10.0, $velocity->toUnit('m/s'), 0.0001);
@@ -401,7 +401,7 @@ final class DerivedUnitsTest extends TestCase
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage("Unit 'km/h²' not found");
 
-        $acceleration = (new Velocity(100, 'm/s'))->divide(new Time(10, 's'));
+        $acceleration = new Velocity(100, 'm/s')->divide(new Time(10, 's'));
         $acceleration->toUnit('km/h²');
     }
 
@@ -412,7 +412,7 @@ final class DerivedUnitsTest extends TestCase
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage("Unit 'N/cm²' not found");
 
-        $pressure = (new Force(100, 'N'))->divide(new Area(10, 'm²'));
+        $pressure = new Force(100, 'N')->divide(new Area(10, 'm²'));
         $pressure->toUnit('N/cm²');
     }
 
@@ -423,7 +423,7 @@ final class DerivedUnitsTest extends TestCase
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage("Unit 'J/min' not found");
 
-        $power = (new Energy(1000, 'J'))->divide(new Time(10, 's'));
+        $power = new Energy(1000, 'J')->divide(new Time(10, 's'));
         $power->toUnit('J/min');
     }
 }

@@ -47,6 +47,7 @@ class Temperature extends PhysicalQuantity
         };
     }
 
+    #[\Override]
     public function toUnit(string|UnitOfMeasurement $unit): float
     {
         $unitName = is_string($unit) ? $unit : $unit->name;

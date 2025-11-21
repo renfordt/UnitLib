@@ -71,7 +71,7 @@ abstract class PhysicalQuantity implements \Stringable
                     $calculatedNativeValue = $convertedValue;
                     // Create a temporary unit for the original unit
                     $foundUnit = new UnitOfMeasurement($unitName, 1.0);
-                } catch (\InvalidArgumentException $siException) {
+                } catch (\InvalidArgumentException) {
                     throw $e;
                 }
             } else {
@@ -108,7 +108,7 @@ abstract class PhysicalQuantity implements \Stringable
                         $result = $this->convertSIUnit($this->nativeValue, $this->nativeUnit->name, $unit);
 
                         return $result;
-                    } catch (\InvalidArgumentException $siException) {
+                    } catch (\InvalidArgumentException) {
                         // Re-throw the original exception
                         throw $e;
                     }

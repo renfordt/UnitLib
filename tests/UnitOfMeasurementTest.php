@@ -33,7 +33,6 @@ class UnitOfMeasurementTest extends TestCase
     {
         $reflection = new \ReflectionClass($unit);
         $property = $reflection->getProperty('conversionFactor');
-        $property->setAccessible(true);
 
         return $property->getValue($unit);
     }
@@ -59,7 +58,6 @@ class UnitOfMeasurementTest extends TestCase
     {
         $reflection = new \ReflectionClass($unit);
         $property = $reflection->getProperty('aliases');
-        $property->setAccessible(true);
 
         return $property->getValue($unit);
     }
