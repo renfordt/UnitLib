@@ -259,13 +259,29 @@ abstract class PhysicalQuantity implements \Stringable, \JsonSerializable
     /**
      * Multiply this quantity by another physical quantity.
      * Returns a new derived physical quantity.
+     *
+     * @param class-string<PhysicalQuantity>|null $resultType Optional: specify the resulting quantity type for ambiguous operations (e.g., Force × Length can be Energy or Torque)
      */
-    public function multiply(PhysicalQuantity $quantity): PhysicalQuantity
+    public function multiply(PhysicalQuantity $quantity, ?string $resultType = null): PhysicalQuantity
     {
         $result = $this->nativeValue * $quantity->nativeValue;
         $derivedUnitName = $this->nativeUnit->name.' '.$quantity->nativeUnit->name;
 
-        // Handle special cases for derived units
+        // Handle Force × Length ambiguity: can be Energy or Torque
+        if ($this instanceof Force && $quantity instanceof Length) {
+            if ($resultType === Torque::class) {
+                return new Torque($result, 'N⋅m');
+            }
+            return new Energy($result, 'J'); // Default: Energy (work/energy)
+        }
+        if ($this instanceof Length && $quantity instanceof Force) {
+            if ($resultType === Torque::class) {
+                return new Torque($result, 'N⋅m');
+            }
+            return new Energy($result, 'J'); // Default: Energy (work/energy)
+        }
+
+        // Handle other special cases for derived units
         return match (true) {
             // Length × Length = Area
             $this instanceof Length && $quantity instanceof Length => new Area($result, 'm²'),
@@ -274,8 +290,6 @@ abstract class PhysicalQuantity implements \Stringable, \JsonSerializable
             // Mass × Acceleration = Force (1 N = 1 kg·m/s² = 1000 g·m/s²)
             // Mass native unit is grams, so we need to convert to kg
             $this instanceof Mass && $quantity instanceof Acceleration => new Force($result / 1000, 'N'),
-            // Force × Length = Energy
-            $this instanceof Force && $quantity instanceof Length => new Energy($result, 'J'),
             // Current × Resistance = Voltage (Ohm's law: V = I × R)
             $this instanceof Current && $quantity instanceof Resistance => new Voltage($result, 'V'),
             // Resistance × Current = Voltage (commutative)
