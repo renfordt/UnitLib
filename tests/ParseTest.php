@@ -5,18 +5,63 @@ declare(strict_types=1);
 namespace Renfordt\UnitLib\Tests;
 
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
+use Renfordt\UnitLib\Acceleration;
+use Renfordt\UnitLib\AmountOfSubstance;
+use Renfordt\UnitLib\Angle;
+use Renfordt\UnitLib\Area;
+use Renfordt\UnitLib\Capacitance;
+use Renfordt\UnitLib\Charge;
+use Renfordt\UnitLib\Current;
+use Renfordt\UnitLib\Density;
+use Renfordt\UnitLib\Energy;
+use Renfordt\UnitLib\Force;
+use Renfordt\UnitLib\Frequency;
+use Renfordt\UnitLib\Inductance;
 use Renfordt\UnitLib\Length;
+use Renfordt\UnitLib\LuminousIntensity;
+use Renfordt\UnitLib\MagneticFlux;
 use Renfordt\UnitLib\Mass;
 use Renfordt\UnitLib\PhysicalQuantity;
+use Renfordt\UnitLib\Power;
+use Renfordt\UnitLib\Pressure;
+use Renfordt\UnitLib\Resistance;
 use Renfordt\UnitLib\Temperature;
+use Renfordt\UnitLib\Time;
+use Renfordt\UnitLib\Torque;
 use Renfordt\UnitLib\UnitOfMeasurement;
+use Renfordt\UnitLib\Velocity;
+use Renfordt\UnitLib\Voltage;
+use Renfordt\UnitLib\Volume;
 
 #[CoversClass(PhysicalQuantity::class)]
-#[CoversClass(Length::class)]
-#[CoversClass(Mass::class)]
-#[CoversClass(Temperature::class)]
-#[CoversClass(UnitOfMeasurement::class)]
+#[UsesClass(Length::class)]
+#[UsesClass(Mass::class)]
+#[UsesClass(Time::class)]
+#[UsesClass(Temperature::class)]
+#[UsesClass(Area::class)]
+#[UsesClass(Volume::class)]
+#[UsesClass(Force::class)]
+#[UsesClass(Energy::class)]
+#[UsesClass(Power::class)]
+#[UsesClass(Pressure::class)]
+#[UsesClass(Velocity::class)]
+#[UsesClass(Acceleration::class)]
+#[UsesClass(Current::class)]
+#[UsesClass(Voltage::class)]
+#[UsesClass(Resistance::class)]
+#[UsesClass(LuminousIntensity::class)]
+#[UsesClass(AmountOfSubstance::class)]
+#[UsesClass(Angle::class)]
+#[UsesClass(Frequency::class)]
+#[UsesClass(Charge::class)]
+#[UsesClass(Density::class)]
+#[UsesClass(Torque::class)]
+#[UsesClass(Capacitance::class)]
+#[UsesClass(Inductance::class)]
+#[UsesClass(MagneticFlux::class)]
+#[UsesClass(UnitOfMeasurement::class)]
 final class ParseTest extends TestCase
 {
     public function test_parse_basic_format(): void
