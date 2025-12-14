@@ -362,6 +362,81 @@ abstract class PhysicalQuantity implements \Stringable, \JsonSerializable
         };
     }
 
+    /**
+     * Compare this quantity to another quantity of the same type.
+     * Returns positive if this > other, negative if this < other, 0 if equal.
+     *
+     * @return int -1, 0, or 1
+     * @throws \InvalidArgumentException If quantities are of incompatible types
+     */
+    public function compareTo(PhysicalQuantity $quantity): int
+    {
+        if (static::class !== $quantity::class) {
+            throw new \InvalidArgumentException(
+                sprintf('Cannot compare %s with %s', static::class, $quantity::class)
+            );
+        }
+
+        return $this->nativeValue <=> $quantity->nativeValue;
+    }
+
+    /**
+     * Check if this quantity is greater than another quantity.
+     *
+     * @throws \InvalidArgumentException If quantities are of incompatible types
+     */
+    public function greaterThan(PhysicalQuantity $quantity): bool
+    {
+        return $this->compareTo($quantity) > 0;
+    }
+
+    /**
+     * Check if this quantity is less than another quantity.
+     *
+     * @throws \InvalidArgumentException If quantities are of incompatible types
+     */
+    public function lessThan(PhysicalQuantity $quantity): bool
+    {
+        return $this->compareTo($quantity) < 0;
+    }
+
+    /**
+     * Check if this quantity is greater than or equal to another quantity.
+     *
+     * @throws \InvalidArgumentException If quantities are of incompatible types
+     */
+    public function greaterThanOrEqualTo(PhysicalQuantity $quantity): bool
+    {
+        return $this->compareTo($quantity) >= 0;
+    }
+
+    /**
+     * Check if this quantity is less than or equal to another quantity.
+     *
+     * @throws \InvalidArgumentException If quantities are of incompatible types
+     */
+    public function lessThanOrEqualTo(PhysicalQuantity $quantity): bool
+    {
+        return $this->compareTo($quantity) <= 0;
+    }
+
+    /**
+     * Check if this quantity equals another quantity (within floating-point precision).
+     *
+     * @param float $epsilon The precision threshold (default: 1e-10)
+     * @throws \InvalidArgumentException If quantities are of incompatible types
+     */
+    public function equals(PhysicalQuantity $quantity, float $epsilon = 1e-10): bool
+    {
+        if (static::class !== $quantity::class) {
+            throw new \InvalidArgumentException(
+                sprintf('Cannot compare %s with %s', static::class, $quantity::class)
+            );
+        }
+
+        return abs($this->nativeValue - $quantity->nativeValue) < $epsilon;
+    }
+
     protected function convert(UnitOfMeasurement $unit): PhysicalQuantity
     {
         $convertedValue = $this->toUnit($unit);
