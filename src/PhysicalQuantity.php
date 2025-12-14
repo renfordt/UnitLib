@@ -168,6 +168,10 @@ abstract class PhysicalQuantity implements \Stringable
             $this instanceof Current && $quantity instanceof Resistance => new Voltage($result, 'V'),
             // Resistance × Current = Voltage (commutative)
             $this instanceof Resistance && $quantity instanceof Current => new Voltage($result, 'V'),
+            // Current × Time = Charge (Q = I × t)
+            $this instanceof Current && $quantity instanceof Time => new Charge($result, 'C'),
+            // Time × Current = Charge (commutative)
+            $this instanceof Time && $quantity instanceof Current => new Charge($result, 'C'),
             default => throw new \InvalidArgumentException("Cannot multiply {$this->nativeUnit->name} by {$quantity->nativeUnit->name}: resulting unit '{$derivedUnitName}' is not supported"),
         };
     }
