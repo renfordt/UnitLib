@@ -133,6 +133,18 @@ final class SerializationTest extends TestCase
         ]);
     }
 
+    public function test_from_json_throws_exception_for_non_string_class(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('class must be a string');
+
+        PhysicalQuantity::fromJson([
+            'class' => 123, // Not a string
+            'value' => 100,
+            'unit' => 'cm',
+        ]);
+    }
+
     public function test_from_json_throws_exception_for_invalid_class(): void
     {
         $this->expectException(\InvalidArgumentException::class);
