@@ -131,6 +131,73 @@ abstract class PhysicalQuantity implements \Stringable, \JsonSerializable
     }
 
     /**
+     * Parse a string like "5.5 meters" or "100 km" into a PhysicalQuantity.
+     *
+     * @param string $input The string to parse (e.g., "10.5 m", "5 kilometers")
+     * @param class-string<PhysicalQuantity>|null $expectedClass Optional class to enforce type
+     * @throws \InvalidArgumentException If parsing fails
+     */
+    public static function parse(string $input, ?string $expectedClass = null): PhysicalQuantity
+    {
+        $input = trim($input);
+
+        // Pattern: optional sign, digits (with optional decimal), whitespace, unit
+        if (!preg_match('/^([+-]?\d+(?:\.\d+)?)\s*(.*)$/u', $input, $matches)) {
+            throw new \InvalidArgumentException("Cannot parse '{$input}': invalid format. Expected format: 'number unit' (e.g., '5.5 meters')");
+        }
+
+        $value = (float) $matches[1];
+        $unit = trim($matches[2]);
+
+        if ($unit === '') {
+            throw new \InvalidArgumentException("Cannot parse '{$input}': no unit specified");
+        }
+
+        // If expected class provided, use it
+        if ($expectedClass !== null) {
+            return new $expectedClass($value, $unit);
+        }
+
+        // Auto-detect: try all quantity classes
+        $quantityClasses = [
+            Length::class,
+            Mass::class,
+            Time::class,
+            Temperature::class,
+            Area::class,
+            Volume::class,
+            Force::class,
+            Energy::class,
+            Power::class,
+            Pressure::class,
+            Velocity::class,
+            Acceleration::class,
+            Current::class,
+            Voltage::class,
+            Resistance::class,
+            LuminousIntensity::class,
+            AmountOfSubstance::class,
+            Angle::class,
+            Frequency::class,
+            Charge::class,
+            Density::class,
+            Torque::class,
+            Capacitance::class,
+            Inductance::class,
+            MagneticFlux::class,
+        ];
+
+        foreach ($quantityClasses as $class) {
+            try {
+                return new $class($value, $unit);
+            } catch (\InvalidArgumentException) {
+                continue;
+            }
+        }
+
+        throw new \InvalidArgumentException("Cannot parse '{$input}': unit '{$unit}' not recognized in any quantity type");
+    }
+  
      * Serialize to JSON-compatible array.
      * Returns both original and native values for flexibility.
      *
@@ -212,6 +279,10 @@ abstract class PhysicalQuantity implements \Stringable, \JsonSerializable
             $this instanceof Current && $quantity instanceof Resistance => new Voltage($result, 'V'),
             // Resistance × Current = Voltage (commutative)
             $this instanceof Resistance && $quantity instanceof Current => new Voltage($result, 'V'),
+            // Voltage × Time = MagneticFlux (Φ = V × t)
+            $this instanceof Voltage && $quantity instanceof Time => new MagneticFlux($result, 'Wb'),
+            // Time × Voltage = MagneticFlux (commutative)
+            $this instanceof Time && $quantity instanceof Voltage => new MagneticFlux($result, 'Wb'),
             // Current × Time = Charge (Q = I × t)
             $this instanceof Current && $quantity instanceof Time => new Charge($result, 'C'),
             // Time × Current = Charge (commutative)
@@ -255,6 +326,10 @@ abstract class PhysicalQuantity implements \Stringable, \JsonSerializable
             $this instanceof Voltage && $quantity instanceof Current => new Resistance($result, 'Ω'),
             // Voltage / Resistance = Current (Ohm's law: I = V / R)
             $this instanceof Voltage && $quantity instanceof Resistance => new Current($result, 'A'),
+            // Charge / Voltage = Capacitance (C = Q/V)
+            $this instanceof Charge && $quantity instanceof Voltage => new Capacitance($result, 'F'),
+            // MagneticFlux / Current = Inductance (L = Φ/I)
+            $this instanceof MagneticFlux && $quantity instanceof Current => new Inductance($result, 'H'),
             default => throw new \InvalidArgumentException("Cannot divide {$this->nativeUnit->name} by {$quantity->nativeUnit->name}: resulting unit '{$derivedUnitName}' is not supported"),
         };
     }
