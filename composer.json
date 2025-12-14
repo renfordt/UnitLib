@@ -1,6 +1,25 @@
 {
     "name": "renfordt/unit-lib",
     "description": "A PHP package for Units of Measurements",
+    "keywords": [
+        "units",
+        "measurement",
+        "conversion",
+        "physics",
+        "quantities",
+        "SI units",
+        "metric",
+        "imperial",
+        "unit conversion",
+        "physical quantities",
+        "dimensional analysis"
+    ],
+    "homepage": "https://github.com/renfordt/UnitLib",
+    "support": {
+        "issues": "https://github.com/renfordt/UnitLib/issues",
+        "source": "https://github.com/renfordt/UnitLib",
+        "docs": "https://github.com/renfordt/UnitLib/blob/main/README.md"
+    },
     "type": "library",
     "require": {
         "php": "^8.4"
@@ -10,7 +29,9 @@
         "rector/rector": "^2.2",
         "symfony/var-dumper": "^7.3",
         "phpunit/phpunit": "^12.4",
-        "laravel/pint": "^1.25"
+        "laravel/pint": "^1.25",
+        "phpstan/extension-installer": "^1.4",
+        "phpstan/phpstan-phpunit": "^2.0"
     },
     "license": "MIT",
     "autoload": {
@@ -37,5 +58,10 @@
             "@test:types",
             "@test:unit"
         ]
+    },
+    "config": {
+        "allow-plugins": {
+            "phpstan/extension-installer": true
+        }
     }
 }
