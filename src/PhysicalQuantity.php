@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Renfordt\UnitLib;
 
-abstract class PhysicalQuantity implements \Stringable
+abstract class PhysicalQuantity implements \Stringable, \JsonSerializable
 {
     public readonly float $nativeValue;
 
@@ -197,6 +197,49 @@ abstract class PhysicalQuantity implements \Stringable
 
         throw new \InvalidArgumentException("Cannot parse '{$input}': unit '{$unit}' not recognized in any quantity type");
     }
+  
+     * Serialize to JSON-compatible array.
+     * Returns both original and native values for flexibility.
+     *
+     * @return array{value: float, unit: string, nativeValue: float, nativeUnit: string, class: string}
+     */
+    public function jsonSerialize(): array
+    {
+        return [
+            'value' => $this->originalValue,
+            'unit' => $this->originalUnit->name,
+            'nativeValue' => $this->nativeValue,
+            'nativeUnit' => $this->nativeUnit->name,
+            'class' => static::class,
+        ];
+    }
+
+    /**
+     * Create a PhysicalQuantity from JSON data.
+     *
+     * @param array<string, mixed> $data
+     */
+    public static function fromJson(array $data): PhysicalQuantity
+    {
+        if (!isset($data['class'], $data['value'], $data['unit'])) {
+            throw new \InvalidArgumentException('Invalid JSON data: missing required fields (class, value, unit)');
+        }
+
+        $className = $data['class'];
+        if (!is_string($className)) {
+            throw new \InvalidArgumentException('Invalid JSON data: class must be a string');
+        }
+
+        if (!class_exists($className)) {
+            throw new \InvalidArgumentException("Invalid JSON data: class '{$className}' does not exist");
+        }
+
+        if (!is_subclass_of($className, PhysicalQuantity::class)) {
+            throw new \InvalidArgumentException("Invalid JSON data: class '{$className}' is not a PhysicalQuantity");
+        }
+
+        return new $className($data['value'], $data['unit']);
+    }
 
     public function add(PhysicalQuantity $quantity): PhysicalQuantity
     {
@@ -240,6 +283,10 @@ abstract class PhysicalQuantity implements \Stringable
             $this instanceof Voltage && $quantity instanceof Time => new MagneticFlux($result, 'Wb'),
             // Time × Voltage = MagneticFlux (commutative)
             $this instanceof Time && $quantity instanceof Voltage => new MagneticFlux($result, 'Wb'),
+            // Current × Time = Charge (Q = I × t)
+            $this instanceof Current && $quantity instanceof Time => new Charge($result, 'C'),
+            // Time × Current = Charge (commutative)
+            $this instanceof Time && $quantity instanceof Current => new Charge($result, 'C'),
             default => throw new \InvalidArgumentException("Cannot multiply {$this->nativeUnit->name} by {$quantity->nativeUnit->name}: resulting unit '{$derivedUnitName}' is not supported"),
         };
     }
