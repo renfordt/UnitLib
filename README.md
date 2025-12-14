@@ -57,14 +57,18 @@ UnitLib is a comprehensive PHP library designed for developers who need to work 
 ✨ **Comprehensive Unit Coverage**
 - **Basic Quantities**: Length, Mass, Time, Temperature
 - **Geometric**: Area, Volume
-- **Mechanical**: Force, Pressure, Velocity, Acceleration
-- **Energy & Power**: Energy, Power
-- **Electrical**: Current, Voltage, Luminous Intensity
+- **Mechanical**: Force, Pressure, Velocity, Acceleration, Torque, Density
+- **Energy & Power**: Energy, Power, Frequency
+- **Electrical**: Current, Voltage, Resistance, Charge, Capacitance, Inductance, MagneticFlux
+- **Photometry**: Luminous Intensity
+- **Chemistry**: Amount of Substance
+- **Angular**: Angle
 
 📐 **Flexible Conversions**
 - Metric (SI) units with automatic prefix handling
 - Imperial and US customary units
 - Specialized units (nautical miles, knots, etc.)
+- CGS units (maxwell, dyne, etc.)
 
 🔒 **Type-Safe Design**
 - Immutable quantity objects
@@ -77,6 +81,23 @@ UnitLib is a comprehensive PHP library designed for developers who need to work 
 - Power operations (e.g., Length² = Area)
 - Automatic unit normalization
 - Factory methods for convenient creation
+- Ambiguity resolution (e.g., Force × Length can be Energy or Torque)
+
+🔍 **Comparison Operations**
+- Compare quantities: `greaterThan()`, `lessThan()`, `equals()`
+- Epsilon-based floating-point equality
+- Type-safe comparisons with automatic unit conversion
+- Sorting support via `compareTo()`
+
+📝 **String Parsing**
+- Parse strings into quantities: `PhysicalQuantity::parse("5.5 meters")`
+- Auto-detection or explicit type specification
+- Support for decimals, negatives, SI prefixes
+
+💾 **Serialization**
+- JSON serialization via `JsonSerializable` interface
+- Round-trip serialization with `fromJson()`
+- Preserves both original and native values
 
 🌡️ **Temperature Support**
 - Handles offset-based conversions (Celsius, Fahrenheit)
@@ -213,6 +234,47 @@ echo $temp->toUnit('K');       // 273.15
 ### 🔌 Voltage
 - **SI**: volt (V) with automatic SI prefix support (mV, μV, kV, MV, etc.)
 
+### 🔋 Charge
+- **SI**: coulomb (C) with automatic SI prefix support (mC, μC, nC, kC, etc.)
+- **Battery**: ampere-hour (Ah), milliampere-hour (mAh)
+- **Scientific**: elementary charge (e)
+
+### 📻 Frequency
+- **SI**: hertz (Hz) with automatic SI prefix support (kHz, MHz, GHz, THz, etc.)
+- **Mechanical**: revolutions per minute (RPM), beats per minute (BPM)
+- **Angular**: radians per second (rad/s)
+
+### 🔩 Torque
+- **SI**: newton-meter (N·m) with automatic SI prefix support
+- **Imperial**: pound-force foot (lbf·ft), pound-force inch (lbf·in)
+- **CGS**: dyne-centimeter (dyn·cm)
+
+### 🧪 Density
+- **SI**: kilogram per cubic meter (kg/m³)
+- **Metric**: gram per cubic centimeter (g/cm³), gram per liter (g/L)
+- **Imperial**: pound per cubic foot (lb/ft³), pound per gallon (lb/gal)
+
+### 🔌 Capacitance
+- **SI**: farad (F) with automatic SI prefix support (μF, nF, pF, etc.)
+
+### 🧲 Inductance
+- **SI**: henry (H) with automatic SI prefix support (mH, μH, nH, etc.)
+
+### 🧲 Magnetic Flux
+- **SI**: weber (Wb) with automatic SI prefix support (mWb, μWb, etc.)
+- **CGS**: maxwell (Mx)
+
+### 🔬 Amount of Substance
+- **SI**: mole (mol) with automatic SI prefix support (mmol, μmol, kmol, etc.)
+
+### 📐 Angle
+- **SI**: radian (rad)
+- **Common**: degree (°), arcminute ('), arcsecond (")
+- **Navigation**: gradian (gon)
+
+### ⚙️ Resistance
+- **SI**: ohm (Ω) with automatic SI prefix support (mΩ, kΩ, MΩ, etc.)
+
 ---
 
 ## Usage Guide
@@ -309,9 +371,13 @@ $accel = new Acceleration(9.8, 'm/s²');
 $force = $mass->multiply($accel);
 echo $force->toUnit('N');  // 98
 
-// Force × Length = Energy
+// Force × Length = Energy (default)
 $work = $force->multiply(new Length(5, 'm'));
 echo $work->toUnit('J');  // 490
+
+// Force × Length = Torque (when specified)
+$torque = $force->multiply(new Length(0.5, 'm'), Torque::class);
+echo $torque->toUnit('N⋅m');  // 49
 
 // Energy / Time = Power
 $power = $work->divide($time);
@@ -398,6 +464,84 @@ echo $tiny->toUnit('m');      // 0.0005
 - Yocto (y): 10⁻²⁴
 - Ronto (r): 10⁻²⁷
 - Quecto (q): 10⁻³⁰
+
+### String Parsing
+
+Parse string representations into physical quantities:
+
+```php
+use Renfordt\UnitLib\PhysicalQuantity;
+use Renfordt\UnitLib\Length;
+
+// Auto-detection (tries all quantity types)
+$length = PhysicalQuantity::parse('5.5 meters');
+$mass = PhysicalQuantity::parse('100 kg');
+$temp = PhysicalQuantity::parse('-40 °C');
+
+// With explicit type (faster and type-safe)
+$distance = PhysicalQuantity::parse('100 km', Length::class);
+
+// Supports various formats
+PhysicalQuantity::parse('5.5 m');      // With space
+PhysicalQuantity::parse('100km');      // Without space
+PhysicalQuantity::parse('-10 meters'); // Negative values
+PhysicalQuantity::parse('+5 kg');      // Positive sign
+```
+
+### Comparing Quantities
+
+Compare quantities safely with automatic unit conversion:
+
+```php
+use Renfordt\UnitLib\Length;
+
+$length1 = new Length(1, 'km');
+$length2 = new Length(500, 'm');
+$length3 = new Length(1000, 'm');
+
+// Comparison methods
+$length1->greaterThan($length2);           // true
+$length1->lessThan($length2);              // false
+$length1->greaterThanOrEqualTo($length3);  // true
+$length1->lessThanOrEqualTo($length3);     // true
+
+// Equality with epsilon for floating-point safety
+$length1->equals($length3);                // true (default epsilon: 1e-10)
+$length1->equals($length3, 0.001);         // true (custom epsilon)
+
+// Sorting with compareTo
+$lengths = [
+    new Length(5, 'm'),
+    new Length(200, 'cm'),
+    new Length(3000, 'mm'),
+];
+usort($lengths, fn($a, $b) => $a->compareTo($b));
+// Result: [2m, 3m, 5m]
+```
+
+### JSON Serialization
+
+Serialize and deserialize quantities for storage or APIs:
+
+```php
+use Renfordt\UnitLib\Length;
+use Renfordt\UnitLib\PhysicalQuantity;
+
+$length = new Length(100, 'cm');
+
+// Serialize to JSON
+$json = json_encode($length);
+// {"value":100,"unit":"cm","nativeValue":1,"nativeUnit":"m","class":"Renfordt\\UnitLib\\Length"}
+
+// Deserialize from JSON
+$data = json_decode($json, true);
+$restored = PhysicalQuantity::fromJson($data);
+
+// Round-trip serialization preserves values
+echo $restored->originalValue;  // 100
+echo $restored->toUnit('cm');   // 100
+echo $restored->toUnit('m');    // 1
+```
 
 ### Temperature Conversions
 
