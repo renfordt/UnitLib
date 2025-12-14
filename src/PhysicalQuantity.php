@@ -197,7 +197,8 @@ abstract class PhysicalQuantity implements \Stringable, \JsonSerializable
 
         throw new \InvalidArgumentException("Cannot parse '{$input}': unit '{$unit}' not recognized in any quantity type");
     }
-  
+
+    /**
      * Serialize to JSON-compatible array.
      * Returns both original and native values for flexibility.
      *
