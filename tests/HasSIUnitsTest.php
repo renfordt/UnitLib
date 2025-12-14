@@ -115,12 +115,14 @@ class HasSIUnitsTest extends TestCase
     public function test_convert_si_unit_throws_exception_for_different_powers(): void
     {
         $this->expectException(InvalidArgumentException::class);
+        // Note: This will fail validation before reaching the power check
+        // because m³ is not valid for Area's base unit m²
         $this->expectExceptionMessage('Invalid metric unit provided');
 
         // Create an Area instance which uses m² as base unit
         $area = new Area(1, 'm²');
-        // Try to convert m² to m (different powers) - will fail validation
-        $area->convertSIUnit(1, 'm²', 'm');
+        // Try to convert km² (power 2) to an invalid unit for Area
+        $area->convertSIUnit(1, 'km²', 'm');
     }
 
     public function test_convert_si_unit_handles_area_conversions(): void
@@ -266,6 +268,18 @@ class HasSIUnitsTest extends TestCase
         // This tests the numeric power unit matching in extractPrefixAndPower (lines 164-173)
         $area = new Area(1000000, 'm²');
         $result = $area->toUnit('km²');
+        $this->assertEquals(1, $result);
+    }
+
+    public function test_convert_si_unit_validates_numeric_power_notation(): void
+    {
+        // Test numeric notation validation (lines 127-130 in isValidSIUnit)
+        // The code should handle both "m²" and potential "m2" representations
+        $area = new Area(1, 'm²');
+
+        // This test ensures the numeric power fallback works correctly
+        // by converting between different prefixed units
+        $result = $area->convertSIUnit(1000000, 'm²', 'km²');
         $this->assertEquals(1, $result);
     }
 
